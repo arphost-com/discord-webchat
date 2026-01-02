@@ -1,0 +1,20 @@
+# Example Caddy reverse proxy for livechat.arphost.com
+# Replace email + domain as needed.
+
+livechat.arphost.com {
+  encode zstd gzip
+
+  reverse_proxy 10.10.10.93:3000 {
+    header_up Host {host}
+    header_up X-Forwarded-For {remote}
+    header_up X-Forwarded-Proto {scheme}
+  }
+
+  # Allow cross-origin embedding of widget.js
+  header {
+    -Cross-Origin-Resource-Policy
+    -Cross-Origin-Opener-Policy
+    Cross-Origin-Resource-Policy "cross-origin"
+    Cross-Origin-Opener-Policy "unsafe-none"
+  }
+}

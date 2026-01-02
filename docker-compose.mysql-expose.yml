@@ -1,0 +1,9 @@
+# Optional override: expose MySQL port for remote database access.
+# Usage:
+#   docker compose -f docker-compose.nocaddy.yml -f docker-compose.mysql-expose.yml up -d
+# or
+#   docker compose -f docker-compose.with-caddy.yml -f docker-compose.mysql-expose.yml up -d
+services:
+  mysql:
+    ports:
+      - "${MYSQL_PUBLISHED_PORT:-3306}:3306"

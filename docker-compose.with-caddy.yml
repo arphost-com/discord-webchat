@@ -1,0 +1,105 @@
+services:
+  mysql:
+    image: mariadb:10.11
+    container_name: webchat_bridge_mysql
+    restart: unless-stopped
+    environment:
+      MARIADB_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MARIADB_DATABASE: ${MYSQL_DATABASE}
+      MARIADB_USER: ${MYSQL_USER}
+      MARIADB_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - ./data/mysql:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mariadb-admin", "ping", "-h", "127.0.0.1", "-uroot", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+      start_period: 20s
+    networks:
+      - webchat_bridge
+
+  gateway:
+    build: ./gateway
+    container_name: webchat_bridge_gateway
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+
+      # Discord
+      DISCORD_BOT_TOKEN: ${DISCORD_BOT_TOKEN}
+      DISCORD_GUILD_ID: ${DISCORD_GUILD_ID}
+      DISCORD_SUPPORT_CHANNEL_IDS: ${DISCORD_SUPPORT_CHANNEL_IDS}
+      DISCORD_THREAD_TYPE: ${DISCORD_THREAD_TYPE}
+
+      # DB (gateway connection)
+      DB_HOST: ${DB_HOST:-mysql}
+      DB_PORT: ${DB_PORT:-3306}
+      DB_NAME: ${DB_NAME:-${MYSQL_DATABASE}}
+      DB_USER: ${DB_USER:-${MYSQL_USER}}
+      DB_PASS: ${DB_PASS:-${MYSQL_PASSWORD}}
+
+      # Security / widget signing
+      WIDGET_HMAC_SECRET: ${WIDGET_HMAC_SECRET}
+      ADMIN_API_KEY: ${ADMIN_API_KEY}
+      TRACKING_RETENTION_DAYS: ${TRACKING_RETENTION_DAYS:-0}
+      GEOIP_PROVIDER: ${GEOIP_PROVIDER:-ipapi}
+      GEOIP_API_KEY: ${GEOIP_API_KEY:-}
+
+      # Public URL
+      PUBLIC_BASE_URL: ${PUBLIC_BASE_URL}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS}
+
+      # Email
+      EMAIL_ENABLED: ${EMAIL_ENABLED:-false}
+      EMAIL_PROVIDER: ${EMAIL_PROVIDER:-smtp}
+      EMAIL_NOTIFY_TO: ${EMAIL_NOTIFY_TO:-}
+      EMAIL_FROM: ${EMAIL_FROM:-}
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-25}
+      SMTP_SECURE: ${SMTP_SECURE:-false}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
+
+      # Widget theme/branding
+      WIDGET_CHAT_LABEL: ${WIDGET_CHAT_LABEL:-Live Help}
+      WIDGET_LOGO_URL: ${WIDGET_LOGO_URL:-}
+      WIDGET_THEME: ${WIDGET_THEME:-dark}
+      WIDGET_ACCENT: ${WIDGET_ACCENT:-#3b82f6}
+      WIDGET_BG: ${WIDGET_BG:-#0b0f14}
+      WIDGET_PANEL_BG: ${WIDGET_PANEL_BG:-#0f172a}
+      WIDGET_TEXT: ${WIDGET_TEXT:-#e5e7eb}
+      WIDGET_MUTED: ${WIDGET_MUTED:-#94a3b8}
+      WIDGET_BUBBLE_VISITOR: ${WIDGET_BUBBLE_VISITOR:-#1f2937}
+      WIDGET_BUBBLE_AGENT: ${WIDGET_BUBBLE_AGENT:-#111827}
+      WIDGET_ERROR: ${WIDGET_ERROR:-#ef4444}
+
+    networks:
+      - webchat_bridge
+
+  caddy:
+    image: caddy:2
+    container_name: webchat_bridge_caddy
+    restart: unless-stopped
+    depends_on:
+      - gateway
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - webchat_bridge
+
+networks:
+  webchat_bridge:
+
+volumes:
+  caddy_data:
+  caddy_config:
