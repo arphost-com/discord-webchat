@@ -203,13 +203,6 @@ WHERE session_uuid = ?
   await pool.execute(sql, params);
 }
 
-export async function markSessionTicketed(pool, sessionUuid) {
-  await pool.execute(
-    'UPDATE sessions SET ticket_escalated = 1 WHERE session_uuid = ?',
-    [sessionUuid]
-  );
-}
-
 export async function getAdminSessions(pool, limit = 100, sinceDays = 0) {
   const lim = Math.max(1, Math.min(Number(limit) || 100, 500));
   const days = Number(sinceDays || 0);

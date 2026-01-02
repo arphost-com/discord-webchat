@@ -1,13 +1,6 @@
 // gateway/src/sessions.js
 import crypto from 'crypto';
-import { getSession, upsertSession, insertMessage, updateSessionIdentity, getTranscript, markSessionTicketed } from './db.js';
-import { needsContactDetails, openTicket } from './tickets.js';
-
-const contactPromptedAt = new Map();
-const contactPromptedEver = new Set();
-const CONTACT_PROMPT_MINUTES = Number(process.env.TICKET_CONTACT_PROMPT_MINUTES || 15);
-const CONTACT_PROMPT_COOLDOWN_MS = Math.max(1, CONTACT_PROMPT_MINUTES) * 60 * 1000;
-const CONTACT_PROMPT_ONCE = String(process.env.TICKET_CONTACT_PROMPT_ONCE ?? 'true').toLowerCase() === 'true';
+import { getSession, upsertSession, insertMessage, updateSessionIdentity, getTranscript } from './db.js';
 
 function pickSupportChannelId(seed) {
   const ids = String(process.env.DISCORD_SUPPORT_CHANNEL_IDS || '')
@@ -24,22 +17,6 @@ function pickSupportChannelId(seed) {
   }
   const idx = Math.abs(hash || Date.now()) % ids.length;
   return ids[idx];
-}
-
-function shouldPromptContact(sessionUuid) {
-  if (CONTACT_PROMPT_ONCE && contactPromptedEver.has(sessionUuid)) return false;
-  const last = contactPromptedAt.get(sessionUuid) || 0;
-  return Date.now() - last >= CONTACT_PROMPT_COOLDOWN_MS;
-}
-
-function markPrompted(sessionUuid) {
-  contactPromptedEver.add(sessionUuid);
-  contactPromptedAt.set(sessionUuid, Date.now());
-}
-
-function clearPrompt(sessionUuid) {
-  if (!CONTACT_PROMPT_ONCE) contactPromptedEver.delete(sessionUuid);
-  contactPromptedAt.delete(sessionUuid);
 }
 
 function getThreadType() {
@@ -228,26 +205,6 @@ export async function handleHello({ ws, sessionUuid, payload, pool, discord, log
   } catch (e) {
     logger?.debug?.('[WS] hello persist failed', { err: String(e?.stack || e) });
   }
-
-  if (shouldAutoTicket()) {
-    try {
-      const sess = await getSession(pool, sessionUuid);
-      if (sess && !needsContactDetails(sess)) {
-        clearPrompt(sessionUuid);
-      }
-      if (sess && needsContactDetails(sess) && shouldPromptContact(sessionUuid)) {
-        const msg = 'If we get disconnected, please share your name and email so we can follow up.';
-        await sendAgentMessage({ ws, pool, discord, session: sess, text: msg });
-        markPrompted(sessionUuid);
-      }
-    } catch (e) {
-      logger?.debug?.('[TICKET] hello contact prompt failed', { err: String(e?.message || e) });
-    }
-  }
-}
-
-function shouldAutoTicket() {
-  return String(process.env.TICKET_ALWAYS ?? 'true').toLowerCase() === 'true';
 }
 
 async function sendAgentMessage({ ws, pool, discord, session, text }) {
@@ -290,29 +247,6 @@ async function sendAgentMessage({ ws, pool, discord, session, text }) {
   }
 }
 
-async function maybeOpenTicket({ ws, pool, discord, session, logger }) {
-  const ticketed = Number(session.ticket_escalated || 0) === 1;
-  if (ticketed) return;
-
-  if (needsContactDetails(session)) {
-    if (shouldPromptContact(session.session_uuid)) {
-      const msg = 'Before we open a ticket, please share your name and email address.';
-      await sendAgentMessage({ ws, pool, discord, session, text: msg });
-      markPrompted(session.session_uuid);
-    }
-    return;
-  }
-
-  const transcript = await getTranscript(pool, session.session_uuid);
-  const res = await openTicket({ session, transcript, logger });
-  if (res?.ok) await markSessionTicketed(pool, session.session_uuid);
-  if (res?.ok && res.ticketId) {
-    await sendAgentMessage({ ws, pool, discord, session, text: `I have opened a support ticket for you. Ticket #${res.ticketId}.` });
-  } else if (res?.ok) {
-    await sendAgentMessage({ ws, pool, discord, session, text: 'I have opened a support ticket for you.' });
-  }
-}
-
 export async function handleVisitorMessage({ ws, sessionUuid, text, pool, discord, logger, ai }) {
   if (!sessionUuid) return;
   const msg = String(text || '').trim();
@@ -338,7 +272,6 @@ export async function handleVisitorMessage({ ws, sessionUuid, text, pool, discor
   try {
     const sess = await getSession(pool, sessionUuid);
     if (!sess) return;
-    if (!needsContactDetails(sess)) clearPrompt(sessionUuid);
 
     let threadId = sess.discord_thread_id;
     const channelId = sess.discord_channel_id || pickSupportChannelId();
@@ -376,12 +309,7 @@ export async function handleVisitorMessage({ ws, sessionUuid, text, pool, discor
     } else {
       logger?.warn?.('[DISCORD] cannot post (missing thread/channel)', { sessionUuid });
     }
-
-    if (shouldAutoTicket()) {
-      await maybeOpenTicket({ ws, pool, discord, session: sess, logger });
-    }
   } catch (e) {
     logger?.error?.('[DISCORD] post visitor message failed', { err: String(e?.stack || e) });
   }
-
 }

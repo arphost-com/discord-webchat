@@ -9,7 +9,14 @@ Webchat Bridge is a lightweight, open-source live chat gateway with a drop-in wi
 - Discord bridge (threads per session)
 - WordPress plugin (widget injection + admin dashboard)
 - Session tracking + map view (GeoIP)
-- Email-based ticket escalation
+
+## Architecture
+
+The system consists of three main components:
+
+1.  **Gateway:** A Node.js application that handles WebSocket connections from web clients, manages chat sessions, and relays messages to and from chat backends (like Discord).
+2.  **Web Widget:** A javascript client that can be embedded on any website. It connects to the gateway and provides the user-facing chat interface.
+3.  **Chat-Backend Bridges:** These modules connect the gateway to various chat platforms. Currently, only Discord is implemented.
 
 ## Quick start (Docker)
 
@@ -20,6 +27,35 @@ cp .env.example .env
 docker compose up -d --build
 curl -sS http://localhost:3000/healthz
 ```
+
+## Configuration
+
+All configuration is done via environment variables, loaded from the `.env` file.
+
+### Server
+- `PORT`: Gateway listen port (default: `3000`).
+- `PUBLIC_BASE_URL`: Public URL browsers should use to connect to the gateway.
+
+### Database
+- `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASS`: Credentials for the MySQL/MariaDB database.
+
+### Discord
+- `DISCORD_BOT_TOKEN`: Your Discord bot token.
+- `DISCORD_GUILD_ID`: The ID of your Discord server.
+- `DISCORD_SUPPORT_CHANNEL_IDS`: Comma-separated list of channel IDs where new chat sessions will be posted.
+- `DISCORD_THREAD_TYPE`: `public` or `private` threads for chat sessions.
+
+### Widget Security
+- `WIDGET_HMAC_SECRET`: A long, random string used for signing client tokens.
+- `WIDGET_TOKEN_MAX_AGE_SECONDS`: Max age of tokens in seconds (default: `300`).
+
+### Admin API
+- `ADMIN_API_KEY`: A long, random string for authenticating with the admin API (used by the WordPress plugin).
+
+### Tracking & GeoIP
+- `TRACKING_RETENTION_DAYS`: How long to keep tracking data (0 = forever).
+- `GEOIP_PROVIDER`: `ipapi` or `ipinfo`.
+- `GEOIP_API_KEY`: API key for the GeoIP provider.
 
 ## HTML embed
 
@@ -44,18 +80,13 @@ curl -sS http://localhost:3000/healthz
 
 Copy `wordpress-plugin/arphost-livechat/` into `wp-content/plugins/` and activate **ARPHost LiveChat**. Configure the gateway base URL, admin API key, and widget branding in the plugin settings.
 
-## Ticket escalation (email)
+## API Endpoints
 
-Set these in `.env`:
-- `EMAIL_ENABLED=true`
-- `EMAIL_NOTIFY_TO`
-- `EMAIL_FROM`
-- `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS`
+_(Coming soon)_
 
-Ticket creation is controlled by:
-- `TICKET_ALWAYS=true`
-- `TICKET_CONTACT_PROMPT_MINUTES=180`
-- `TICKET_CONTACT_PROMPT_ONCE=false`
+## Development
+
+_(Coming soon)_
 
 ## License
 

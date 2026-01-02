@@ -40,7 +40,6 @@ async function main() {
   server.listen(port, () => {
     logger.info('Gateway listening', { port, publicBaseUrl: cfg.publicBaseUrl });
   });
-
   const retentionDays = Number(process.env.TRACKING_RETENTION_DAYS || 0);
   if (retentionDays > 0) {
     try {

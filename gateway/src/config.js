@@ -43,19 +43,6 @@ export function loadConfig(env = process.env) {
       supportChannelIds: csv(env.DISCORD_SUPPORT_CHANNEL_IDS),
       threadType: (env.DISCORD_THREAD_TYPE || "public").toLowerCase() // public|private
     },
-    email: {
-      enabled: bool(env.EMAIL_ENABLED, false),
-      provider: (env.EMAIL_PROVIDER || "smtp").toLowerCase(),
-      notifyTo: env.EMAIL_NOTIFY_TO || "",
-      from: env.EMAIL_FROM || "",
-      smtp: {
-        host: env.SMTP_HOST || "",
-        port: Number(env.SMTP_PORT || 25),
-        secure: bool(env.SMTP_SECURE, false),
-        user: env.SMTP_USER || "",
-        pass: env.SMTP_PASS || ""
-      }
-    },
     log: {
       debug: bool(env.DEBUG, false),
       level: env.LOG_LEVEL || "info"
