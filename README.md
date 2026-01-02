@@ -46,9 +46,19 @@ All configuration is done via environment variables, loaded from the `.env` file
 - `DISCORD_THREAD_TYPE`: `public` or `private` threads for chat sessions.
 
 ### Widget Security
+
+Generate a HMAC Secret with the following command.
+```
+openssl rand -hex 32
+```
 - `WIDGET_HMAC_SECRET`: A long, random string used for signing client tokens.
 - `WIDGET_TOKEN_MAX_AGE_SECONDS`: Max age of tokens in seconds (default: `300`).
 
+
+Generate a HMAC Secret with the following command.
+```
+openssl rand -hex 32
+```
 ### Admin API
 - `ADMIN_API_KEY`: A long, random string for authenticating with the admin API (used by the WordPress plugin).
 
