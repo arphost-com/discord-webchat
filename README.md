@@ -1,4 +1,4 @@
-# Webchat Bridge
+# Bring Your on Chat Client Webchat Bridge
 
 Webchat Bridge is a lightweight, open-source live chat gateway with a drop-in widget, Discord relay, and a WordPress plugin. It keeps the feature set small and platform-agnostic so future chat integrations (Slack, Telegram, etc.) can be added cleanly.
 
