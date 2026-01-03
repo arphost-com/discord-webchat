@@ -24,7 +24,7 @@ add_action('admin_init', 'arphost_livechat_register_settings');
 
 function arphost_livechat_menu()
 {
-    add_menu_page('LiveChat', 'LiveChat', 'manage_options', 'arphost-livechat', 'arphost_livechat_admin_page', 'dashicons-format-chat');
+    add_menu_page('LiveChat', 'LiveChat', 'manage_options', 'discord-webchat', 'arphost_livechat_admin_page', 'dashicons-format-chat');
 }
 add_action('admin_menu', 'arphost_livechat_menu');
 
@@ -33,9 +33,8 @@ function arphost_livechat_admin_page()
     $tab = isset($_GET['tab']) ? sanitize_text_field($_GET['tab']) : 'settings';
     echo '<div class="wrap"><h1>ARPHost LiveChat</h1>';
     echo '<nav class="nav-tab-wrapper">';
-    echo '<a class="nav-tab ' . ($tab==='settings'?'nav-tab-active':'') . '" href="?page=arphost-livechat&tab=settings">Settings</a>';
-    echo '<a class="nav-tab ' . ($tab==='dashboard'?'nav-tab-active':'') . '" href="?page=arphost-livechat&tab=dashboard">Dashboard</a>';
-    echo '</nav>';
+    echo '<a class="nav-tab ' . ($tab==='settings'?'nav-tab-active':'') . '" href="?page=discord-webchat&tab=settings">Settings</a>';
+    echo '<a class="nav-tab ' . ($tab==='dashboard'?'nav-tab-active':'') . '" href="?page=discord-webchat&tab=dashboard">Dashboard</a>';    echo '</nav>';
 
     if ($tab === 'dashboard') {
         arphost_livechat_render_dashboard();
@@ -132,7 +131,7 @@ function arphost_livechat_render_dashboard()
     echo '<div style="margin:10px 0;">';
     foreach ($ranges as $key => $label) {
         $class = ($range === $key) ? 'button button-primary' : 'button';
-        $url = admin_url('admin.php?page=arphost-livechat&tab=dashboard&range=' . urlencode($key));
+        $url = admin_url('admin.php?page=discord-webchat&tab=dashboard&range=' . urlencode($key));
         echo '<a class="'.$class.'" style="margin-right:6px;" href="'.esc_url($url).'">'.$label.'</a>';
     }
     echo '</div>';
