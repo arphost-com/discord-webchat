@@ -88,7 +88,7 @@ openssl rand -hex 32
 
 ## WordPress plugin
 
-Copy `wordpress-plugin/arphost-livechat/` into `wp-content/plugins/` and activate **ARPHost LiveChat**. Configure the gateway base URL, admin API key, and widget branding in the plugin settings.
+Copy `wordpress-plugin/discord-webchat/` into `wp-content/plugins/` and activate **Discord Webchat**. Configure the gateway base URL, admin API key, and widget branding in the plugin settings.
 
 ## API Endpoints
 

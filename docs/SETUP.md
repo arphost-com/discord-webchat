@@ -33,7 +33,7 @@ This guide covers Docker, local dev, WordPress, and HTML embeds.
 ## 3) WordPress plugin
 
 1) Copy plugin:
-   - `wordpress-plugin/arphost-livechat/` → `wp-content/plugins/arphost-livechat/`
+   - `wordpress-plugin/discord-webchat/` → `wp-content/plugins/discord-webchat/`
 2) Activate plugin in WP Admin.
 3) Configure:
    - Gateway Base URL
