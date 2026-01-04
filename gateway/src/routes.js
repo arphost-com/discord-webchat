@@ -5,7 +5,6 @@ import fs from "fs";
 import path from "path";
 import crypto from "crypto";
 import { fileURLToPath } from "url";
-import csrf from "csurf";
 
 import {
   startGuestSession,
@@ -230,14 +229,14 @@ export function setupRoutes(app, deps = {}) {
   );
   const adminApiKey = process.env.ADMIN_API_KEY || "";
 
-  // CSRF protection
-  const csrfProtection = csrf({
-    cookie: {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-    },
-  });
+  // NOTE: CSRF middleware removed.
+  //
+  // This gateway's public widget endpoints are not cookie-authenticated, and the
+  // admin endpoints use an explicit `X-Admin-Key` header. Enabling csurf here
+  // causes breakage (and requires cookie-parser/session plumbing).
+  //
+  // If you later switch to cookie-based auth, re-introduce CSRF with proper
+  // cookie/session middleware and a token bootstrap flow for the widget.
 
   const corsMiddleware = cors({
     origin(origin, cb) {
@@ -261,8 +260,7 @@ export function setupRoutes(app, deps = {}) {
   app.use("/api", corsMiddleware);
   app.options("/api/*", corsMiddleware);
 
-  // Apply CSRF protection to API routes (except GET and OPTIONS)
-  app.use("/api", csrfProtection);
+  // CSRF intentionally not applied here (see note above).
 
   // Serve widget from memory cache (loaded at module init time)
   app.get("/widget.js", (req, res) => {

@@ -21,6 +21,32 @@ async function main() {
 
   const app = express();
 
+  /**
+   * Trust the reverse proxy so Express and express-rate-limit can safely use
+   * X-Forwarded-For for client IP detection when you're behind Caddy/Nginx/Cloudflare.
+   *
+   * This fixes ERR_ERL_UNEXPECTED_X_FORWARDED_FOR.
+   *
+   * If you're NOT behind a proxy, you can set TRUST_PROXY=0 (or leave unset)
+   * and the default here will remain safe.
+   */
+  const trustProxyEnv = process.env.TRUST_PROXY;
+  if (
+    trustProxyEnv === undefined ||
+    trustProxyEnv === null ||
+    trustProxyEnv === ""
+  ) {
+    // Most deployments for this project are behind a reverse proxy.
+    app.set("trust proxy", 1);
+  } else if (trustProxyEnv === "true" || trustProxyEnv === "1") {
+    app.set("trust proxy", 1);
+  } else if (trustProxyEnv === "false" || trustProxyEnv === "0") {
+    app.set("trust proxy", false);
+  } else {
+    // Allow advanced values like: "loopback", "linklocal", "uniquelocal", or a number
+    app.set("trust proxy", trustProxyEnv);
+  }
+
   // Rate limiting middleware
   const limiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
@@ -59,6 +85,7 @@ async function main() {
       publicBaseUrl: cfg.publicBaseUrl,
     });
   });
+
   const retentionDays = Number(process.env.TRACKING_RETENTION_DAYS || 0);
   if (retentionDays > 0) {
     try {

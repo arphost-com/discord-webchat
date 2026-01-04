@@ -2,6 +2,32 @@
 
 Discord Webchat allows you to embed livechat in your website and use discord thread as your client.
 
+## Reverse proxy notes (Nginx Proxy Manager / Caddy / Cloudflare)
+
+This gateway is commonly deployed behind a reverse proxy (for TLS termination and routing `/` + `/ws` to the Node gateway).
+
+### Required: `PUBLIC_BASE_URL`
+
+Set `PUBLIC_BASE_URL` to the **public, fully-qualified** URL that browsers will use, for example:
+
+- `PUBLIC_BASE_URL=https://discord-webchat.arphost.com`
+
+This should match the domain configured in Nginx Proxy Manager / Caddy / Cloudflare.
+
+### Recommended: `TRUST_PROXY` (fixes rate limiting behind proxies)
+
+If you are behind a reverse proxy, the gateway will receive `X-Forwarded-For` headers. To correctly determine client IPs (for rate limiting and logging), set:
+
+- `TRUST_PROXY=1`
+
+This is appropriate for most setups where exactly one reverse proxy is directly in front of the gateway container (Nginx Proxy Manager, Caddy, etc).
+
+If you run the gateway **without** a reverse proxy directly in front of it, set:
+
+- `TRUST_PROXY=0`
+
+If you have multiple proxies in front (for example Cloudflare → Nginx Proxy Manager → gateway), you may need a more specific configuration depending on your network. For many users, `TRUST_PROXY=1` still works if the immediate proxy is the one setting the forwarding headers.
+
 ## What it includes
 
 - Gateway API + WebSocket relay
@@ -35,6 +61,7 @@ All configuration is done via environment variables, loaded from the `.env` file
 ### Server
 - `PORT`: Gateway listen port (default: `3000`).
 - `PUBLIC_BASE_URL`: Public URL browsers should use to connect to the gateway.
+- `TRUST_PROXY`: Set to `1` when running behind a reverse proxy (Nginx Proxy Manager / Caddy / Cloudflare) so the gateway correctly trusts `X-Forwarded-For` for client IP detection (important for rate limiting). Set to `0` when not behind a reverse proxy.
 
 ### Database
 - `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASS`: Credentials for the MySQL/MariaDB database.

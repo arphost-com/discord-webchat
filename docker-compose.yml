@@ -11,7 +11,16 @@ services:
     volumes:
       - ./data/mysql:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mariadb-admin", "ping", "-h", "127.0.0.1", "-uroot", "-p${MYSQL_ROOT_PASSWORD:-password}"]
+      test:
+        [
+          "CMD",
+          "mariadb-admin",
+          "ping",
+          "-h",
+          "127.0.0.1",
+          "-uroot",
+          "-p${MYSQL_ROOT_PASSWORD:-password}",
+        ]
       interval: 5s
       timeout: 3s
       retries: 30
@@ -28,6 +37,10 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3000
+
+      # Reverse proxy support (Nginx Proxy Manager / Caddy / Cloudflare)
+      # Set to 1 when the gateway is behind a proxy that sets X-Forwarded-For.
+      TRUST_PROXY: ${TRUST_PROXY:-1}
 
       PUBLIC_BASE_URL: ${PUBLIC_BASE_URL}
       CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS}
