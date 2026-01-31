@@ -1,6 +1,6 @@
 /**
- * ARPHost LiveChat Widget (ES5-safe)
- * Loaded via <script src="https://livechat.arphost.com/widget.js?v=5" defer data-mode="guest" data-baseurl="https://livechat.arphost.com"></script>
+ * Discord WebChat Widget (ES5-safe)
+ * Loaded via <script src="https://your-gateway.example.com/widget.js?v=5" defer data-mode="guest" data-baseurl="https://your-gateway.example.com"></script>
  */
 (function () {
   function $(sel, root) {
@@ -62,7 +62,7 @@
   var ds = {};
   if (cs && cs.dataset) ds = cs.dataset;
 
-  var cfg = window.ARPCHAT_CONFIG || window.ARPCHAT || {};
+  var cfg = window.DWC_CONFIG || window.DWC || {};
   var mode = cfg.mode || ds.mode || "guest";
   var baseUrl = cfg.baseUrl || cfg.baseurl || ds.baseurl || ds.baseUrl || "";
   if (!baseUrl) {
@@ -90,43 +90,43 @@
   }
 
   // DOM
-  var host = el("div", { class: "arpchat-host" });
+  var host = el("div", { class: "dwc-host" });
   var bubble = el("button", {
-    class: "arpchat-bubble",
+    class: "dwc-bubble",
     type: "button",
     "aria-label": "Open chat",
   });
   bubble.textContent = "Chat";
-  var panel = el("div", { class: "arpchat-panel", "aria-hidden": "true" });
+  var panel = el("div", { class: "dwc-panel", "aria-hidden": "true" });
 
-  var header = el("div", { class: "arpchat-header" });
+  var header = el("div", { class: "dwc-header" });
   if (logoUrl) {
-    var img = el("img", { class: "arpchat-logo", src: logoUrl, alt: "" });
+    var img = el("img", { class: "dwc-logo", src: logoUrl, alt: "" });
     header.appendChild(img);
   }
-  header.appendChild(el("div", { class: "arpchat-title", text: label }));
+  header.appendChild(el("div", { class: "dwc-title", text: label }));
   var closeBtn = el("button", {
-    class: "arpchat-close",
+    class: "dwc-close",
     type: "button",
     "aria-label": "Close chat",
     text: "×",
   });
   header.appendChild(closeBtn);
 
-  var body = el("div", { class: "arpchat-body" });
-  var messages = el("div", { class: "arpchat-messages" });
+  var body = el("div", { class: "dwc-body" });
+  var messages = el("div", { class: "dwc-messages" });
 
-  var pre = el("div", { class: "arpchat-pre" });
+  var pre = el("div", { class: "dwc-pre" });
   var nameInput = el("input", {
-    class: "arpchat-input",
+    class: "dwc-input",
     placeholder: "Your name",
   });
   var emailInput = el("input", {
-    class: "arpchat-input",
+    class: "dwc-input",
     placeholder: "Your email (optional)",
   });
   var startBtn = el("button", {
-    class: "arpchat-start",
+    class: "dwc-start",
     type: "button",
     text: "Start chat",
   });
@@ -134,24 +134,24 @@
   pre.appendChild(emailInput);
   pre.appendChild(startBtn);
 
-  var composer = el("div", { class: "arpchat-composer" });
+  var composer = el("div", { class: "dwc-composer" });
   var emojiToggle = el("button", {
-    class: "arpchat-emoji-toggle",
+    class: "dwc-emoji-toggle",
     type: "button",
     text: "😊",
   });
-  var emojiPanel = el("div", { class: "arpchat-emoji-panel" });
+  var emojiPanel = el("div", { class: "dwc-emoji-panel" });
   var msgInput = el("input", {
-    class: "arpchat-msg",
+    class: "dwc-msg",
     placeholder: "Type a message...",
   });
   var sendBtn = el("button", {
-    class: "arpchat-send",
+    class: "dwc-send",
     type: "button",
     text: "Send",
   });
   var endBtn = el("button", {
-    class: "arpchat-end",
+    class: "dwc-end",
     type: "button",
     text: "End",
   });
@@ -175,33 +175,33 @@
   // Base styles (minimal; server can override)
   var css =
     "" +
-    ":root{--arpchat-accent:#3b82f6;--arpchat-bg:#0b0f14;--arpchat-panel:#0f172a;--arpchat-text:#e5e7eb;--arpchat-muted:#94a3b8;--arpchat-visitor:#1f2937;--arpchat-agent:#111827;--arpchat-error:#ef4444;}" +
-    ".arpchat-host{position:fixed;right:22px;bottom:22px;z-index:2147483646;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;}" +
-    ".arpchat-bubble{background:var(--arpchat-panel);color:var(--arpchat-text);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:10px 14px;cursor:pointer;}" +
-    ".arpchat-panel{width:340px;height:520px;background:var(--arpchat-bg);border:1px solid rgba(255,255,255,.08);border-radius:18px;box-shadow:0 30px 80px rgba(0,0,0,.45);display:none;overflow:hidden;}" +
-    ".arpchat-header{position:relative !important;display:flex;align-items:center !important;gap:10px;padding:12px 14px;background:rgba(255,255,255,.03);border-bottom:1px solid rgba(255,255,255,.06);}" +
-    ".arpchat-logo{width:18px;height:18px;border-radius:4px;}" +
-    ".arpchat-title{flex:1;color:var(--arpchat-text);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-right:28px;}" +
-    ".arpchat-close{position:absolute !important;top:6px;right:8px;left:auto;background:transparent;border:0;color:var(--arpchat-muted);font-size:22px;line-height:1;cursor:pointer;margin:0;margin-left:auto;padding:0;min-width:0;min-height:0;width:24px;height:24px;display:inline-flex;align-items:center;justify-content:center;}" +
-    ".arpchat-body{display:flex;flex-direction:column;height:calc(100% - 52px);}" +
-    ".arpchat-messages{flex:1;overflow:auto;padding:12px;display:flex;flex-direction:column;gap:10px;}" +
-    ".arpchat-pre{padding:12px;display:flex;flex-direction:column;gap:10px;border-top:1px solid rgba(255,255,255,.06);}" +
-    ".arpchat-composer{position:relative;padding:12px;display:none;gap:10px;border-top:1px solid rgba(255,255,255,.06);align-items:center;flex-wrap:nowrap;}" +
-    ".arpchat-composer > *{flex:0 0 auto !important}" +
-    ".arpchat-composer button{position:static !important;float:none !important;margin:0 !important;width:auto !important;display:inline-flex !important;align-items:center;justify-content:center;}" +
-    ".arpchat-emoji-toggle{border:1px solid rgba(255,255,255,.12);background:transparent;color:var(--arpchat-text);border-radius:8px;padding:6px 8px;cursor:pointer;font-size:14px;line-height:1;}" +
-    ".arpchat-emoji-panel{position:fixed;bottom:56px;left:12px;right:12px;display:none;grid-template-columns:repeat(10,1fr);gap:6px;padding:8px;border-radius:10px;background:rgba(15,23,42,.98);border:1px solid rgba(255,255,255,.12);max-height:220px;overflow:auto;z-index:2147483002;pointer-events:auto;box-shadow:0 12px 30px rgba(0,0,0,.35);}" +
-    ".arpchat-emoji-panel *{pointer-events:auto !important}" +
-    ".arpchat-emoji-panel button{border:1px solid rgba(255,255,255,.08);background:transparent;color:var(--arpchat-text);border-radius:8px;padding:6px 0;cursor:pointer;font-size:16px;line-height:1;}" +
-    ".arpchat-input,.arpchat-msg{width:auto !important;min-width:0 !important;max-width:100%;display:block !important;visibility:visible !important;opacity:1 !important;padding:10px 12px;border-radius:12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);color:var(--arpchat-text);outline:none;}" +
-    ".arpchat-msg{flex:1 1 auto !important;min-width:0 !important;}" +
-    ".arpchat-send,.arpchat-start{background:var(--arpchat-accent);color:white;border:0;border-radius:12px;padding:10px 12px;cursor:pointer;font-weight:600;}" +
-    ".arpchat-send{flex:0 0 auto !important;max-width:90px;white-space:nowrap;font-size:13px;padding:8px 10px;line-height:1.1;display:inline-flex;align-items:center;justify-content:center;}" +
-    ".arpchat-end{flex:0 0 auto !important;max-width:90px;white-space:nowrap;font-size:13px;padding:8px 10px;line-height:1.1;border-radius:12px;border:1px solid rgba(255,255,255,.2);background:transparent;color:var(--arpchat-text);display:inline-flex;align-items:center;justify-content:center;}" +
-    ".arpchat-b{max-width:78%;padding:10px 12px;border-radius:14px;color:var(--arpchat-text);word-wrap:break-word;white-space:pre-wrap;}" +
-    ".arpchat-b.visitor{align-self:flex-end;background:var(--arpchat-visitor);}" +
-    ".arpchat-b.agent{align-self:flex-start;background:var(--arpchat-agent);}" +
-    ".arpchat-small{font-size:12px;color:var(--arpchat-muted);}";
+    ":root{--dwc-accent:#3b82f6;--dwc-bg:#0b0f14;--dwc-panel:#0f172a;--dwc-text:#e5e7eb;--dwc-muted:#94a3b8;--dwc-visitor:#1f2937;--dwc-agent:#111827;--dwc-error:#ef4444;}" +
+    ".dwc-host{position:fixed;right:22px;bottom:22px;z-index:2147483646;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;}" +
+    ".dwc-bubble{background:var(--dwc-panel);color:var(--dwc-text);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:10px 14px;cursor:pointer;}" +
+    ".dwc-panel{width:340px;height:520px;background:var(--dwc-bg);border:1px solid rgba(255,255,255,.08);border-radius:18px;box-shadow:0 30px 80px rgba(0,0,0,.45);display:none;overflow:hidden;}" +
+    ".dwc-header{position:relative !important;display:flex;align-items:center !important;gap:10px;padding:12px 14px;background:rgba(255,255,255,.03);border-bottom:1px solid rgba(255,255,255,.06);}" +
+    ".dwc-logo{width:18px;height:18px;border-radius:4px;}" +
+    ".dwc-title{flex:1;color:var(--dwc-text);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-right:28px;}" +
+    ".dwc-close{position:absolute !important;top:6px;right:8px;left:auto;background:transparent;border:0;color:var(--dwc-muted);font-size:22px;line-height:1;cursor:pointer;margin:0;margin-left:auto;padding:0;min-width:0;min-height:0;width:24px;height:24px;display:inline-flex;align-items:center;justify-content:center;}" +
+    ".dwc-body{display:flex;flex-direction:column;height:calc(100% - 52px);}" +
+    ".dwc-messages{flex:1;overflow:auto;padding:12px;display:flex;flex-direction:column;gap:10px;}" +
+    ".dwc-pre{padding:12px;display:flex;flex-direction:column;gap:10px;border-top:1px solid rgba(255,255,255,.06);}" +
+    ".dwc-composer{position:relative;padding:12px;display:none;gap:10px;border-top:1px solid rgba(255,255,255,.06);align-items:center;flex-wrap:nowrap;}" +
+    ".dwc-composer > *{flex:0 0 auto !important}" +
+    ".dwc-composer button{position:static !important;float:none !important;margin:0 !important;width:auto !important;display:inline-flex !important;align-items:center;justify-content:center;}" +
+    ".dwc-emoji-toggle{border:1px solid rgba(255,255,255,.12);background:transparent;color:var(--dwc-text);border-radius:8px;padding:6px 8px;cursor:pointer;font-size:14px;line-height:1;}" +
+    ".dwc-emoji-panel{position:fixed;bottom:56px;left:12px;right:12px;display:none;grid-template-columns:repeat(10,1fr);gap:6px;padding:8px;border-radius:10px;background:rgba(15,23,42,.98);border:1px solid rgba(255,255,255,.12);max-height:220px;overflow:auto;z-index:2147483002;pointer-events:auto;box-shadow:0 12px 30px rgba(0,0,0,.35);}" +
+    ".dwc-emoji-panel *{pointer-events:auto !important}" +
+    ".dwc-emoji-panel button{border:1px solid rgba(255,255,255,.08);background:transparent;color:var(--dwc-text);border-radius:8px;padding:6px 0;cursor:pointer;font-size:16px;line-height:1;}" +
+    ".dwc-input,.dwc-msg{width:auto !important;min-width:0 !important;max-width:100%;display:block !important;visibility:visible !important;opacity:1 !important;padding:10px 12px;border-radius:12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);color:var(--dwc-text);outline:none;}" +
+    ".dwc-msg{flex:1 1 auto !important;min-width:0 !important;}" +
+    ".dwc-send,.dwc-start{background:var(--dwc-accent);color:white;border:0;border-radius:12px;padding:10px 12px;cursor:pointer;font-weight:600;}" +
+    ".dwc-send{flex:0 0 auto !important;max-width:90px;white-space:nowrap;font-size:13px;padding:8px 10px;line-height:1.1;display:inline-flex;align-items:center;justify-content:center;}" +
+    ".dwc-end{flex:0 0 auto !important;max-width:90px;white-space:nowrap;font-size:13px;padding:8px 10px;line-height:1.1;border-radius:12px;border:1px solid rgba(255,255,255,.2);background:transparent;color:var(--dwc-text);display:inline-flex;align-items:center;justify-content:center;}" +
+    ".dwc-b{max-width:78%;padding:10px 12px;border-radius:14px;color:var(--dwc-text);word-wrap:break-word;white-space:pre-wrap;}" +
+    ".dwc-b.visitor{align-self:flex-end;background:var(--dwc-visitor);}" +
+    ".dwc-b.agent{align-self:flex-start;background:var(--dwc-agent);}" +
+    ".dwc-small{font-size:12px;color:var(--dwc-muted);}";
   var style = el("style");
   style.type = "text/css";
   style.appendChild(document.createTextNode(css));
@@ -217,7 +217,7 @@
   var lastHello = null;
 
   function log() {
-    if (window.ARPCHAT_DEBUG) {
+    if (window.DWC_DEBUG) {
       try {
         console.log.apply(console, arguments);
       } catch (e) {}
@@ -225,7 +225,7 @@
   }
 
   function addMsg(who, text) {
-    var b = el("div", { class: "arpchat-b " + who });
+    var b = el("div", { class: "dwc-b " + who });
     b.innerHTML = renderMessage(text);
     messages.appendChild(b);
     // scroll
@@ -236,7 +236,7 @@
   function saveHistory(sessionId, who, text) {
     if (!sessionId) return;
     try {
-      var key = "arpchat_history_" + sessionId;
+      var key = "dwc_history_" + sessionId;
       var raw = localStorage.getItem(key);
       var arr = raw ? safeJsonParse(raw) : [];
       if (!Array.isArray(arr)) arr = [];
@@ -249,7 +249,7 @@
   function loadHistory(sessionId) {
     if (!sessionId) return [];
     try {
-      var key = "arpchat_history_" + sessionId;
+      var key = "dwc_history_" + sessionId;
       var raw = localStorage.getItem(key);
       var arr = raw ? safeJsonParse(raw) : [];
       return Array.isArray(arr) ? arr : [];
@@ -264,7 +264,7 @@
     var items = loadHistory(sessionUuid);
     if (!items.length) return;
     items.forEach(function (it) {
-      var b = el("div", { class: "arpchat-b " + (it.who || "agent") });
+      var b = el("div", { class: "dwc-b " + (it.who || "agent") });
       b.innerHTML = renderMessage(it.text);
       messages.appendChild(b);
     });
@@ -584,10 +584,10 @@
       { sessionUuid: sessionUuid },
       function () {
         try {
-          localStorage.removeItem("arpchat_session");
+          localStorage.removeItem("dwc_session");
         } catch (e) {}
         try {
-          localStorage.removeItem("arpchat_history_" + sessionUuid);
+          localStorage.removeItem("dwc_history_" + sessionUuid);
         } catch (e) {}
         sessionUuid = null;
         messages.innerHTML = "";

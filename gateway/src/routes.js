@@ -65,7 +65,7 @@ function buildWidgetPrelude() {
   const baseUrl = process.env.PUBLIC_BASE_URL || "";
   if (baseUrl) {
     lines.push(
-      `window.ARP_LIVECHAT_BASE_URL = window.ARP_LIVECHAT_BASE_URL || ${JSON.stringify(baseUrl)};`,
+      `window.DWC_BASE_URL = window.DWC_BASE_URL || ${JSON.stringify(baseUrl)};`,
     );
   }
 

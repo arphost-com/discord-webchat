@@ -1,7 +1,7 @@
-/* ARPHost Live Chat Widget (ES5) */
+/* Discord WebChat Widget (ES5) */
 (function () {
-  if (window.ARPHostLiveChat) return;
-  window.ARPHostLiveChat = true;
+  if (window.DiscordWebChat) return;
+  window.DiscordWebChat = true;
 
   var API_BASE = document.currentScript.getAttribute('data-base') || '';
   var ws;

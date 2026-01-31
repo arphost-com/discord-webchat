@@ -10,7 +10,7 @@ This gateway is commonly deployed behind a reverse proxy (for TLS termination an
 
 Set `PUBLIC_BASE_URL` to the **public, fully-qualified** URL that browsers will use, for example:
 
-- `PUBLIC_BASE_URL=https://discord-webchat.arphost.com`
+- `PUBLIC_BASE_URL=https://chat.yourdomain.com`
 
 This should match the domain configured in Nginx Proxy Manager / Caddy / Cloudflare.
 

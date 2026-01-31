@@ -1,10 +1,10 @@
-# Example Caddy reverse proxy for livechat.arphost.com
+# Example Caddy reverse proxy for Discord WebChat
 # Replace email + domain as needed.
 
-livechat.arphost.com {
+chat.yourdomain.com {
   encode zstd gzip
 
-  reverse_proxy 10.10.10.93:3000 {
+  reverse_proxy gateway:3000 {
     header_up Host {host}
     header_up X-Forwarded-For {remote}
     header_up X-Forwarded-Proto {scheme}

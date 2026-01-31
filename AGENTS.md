@@ -36,7 +36,7 @@
 ## Coding Style & Naming Conventions
 - JavaScript uses ES modules and 2‑space indentation (`gateway/src/*.js`).
 - PHP files in `wordpress-plugin/` use 4‑space indentation.
-- Keep filenames and exported functions in lower_snake or lowerCamel style as already used (e.g., `arphost_livechat_*`, `setupRoutes`).
+- Keep filenames and exported functions in lower_snake or lowerCamel style as already used (e.g., `discord_webchat_*`, `setupRoutes`).
 - No formatter/linter is configured; match surrounding style when editing.
 
 ## Testing Guidelines

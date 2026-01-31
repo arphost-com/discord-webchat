@@ -1,7 +1,7 @@
-/* ARPHost Live Chat Widget (ES5) */
+/* Discord WebChat Widget (ES5) */
 (function () {
-  if (window.__ARPCHAT_WIDGET_LOADED) return;
-  window.__ARPCHAT_WIDGET_LOADED = true;
+  if (window.__DISCORD_WEBCHAT_LOADED) return;
+  window.__DISCORD_WEBCHAT_LOADED = true;
   // --- helpers ---
   function $(sel, root) {
     return (root || document).querySelector(sel);
@@ -65,7 +65,7 @@
 
   // --- config ---
   var cs = getCurrentScript();
-  var globalCfg = window.ARPCHAT || {};
+  var globalCfg = window.DISCORD_WEBCHAT || {};
   var baseUrl =
     (cs && (cs.getAttribute("data-base") || cs.getAttribute("data-baseurl"))) ||
     globalCfg.baseUrl ||
@@ -107,23 +107,23 @@
   }
 
   var colors = {
-    accent: getVar("--arpchat-accent", "#3b82f6"),
-    bg: getVar("--arpchat-bg", "#0b0f14"),
-    panelBg: getVar("--arpchat-panel-bg", "#0f172a"),
-    text: getVar("--arpchat-text", "#e5e7eb"),
-    muted: getVar("--arpchat-muted", "#94a3b8"),
-    bubbleVisitor: getVar("--arpchat-bubble-visitor", "#1f2937"),
-    bubbleAgent: getVar("--arpchat-bubble-agent", "#111827"),
-    error: getVar("--arpchat-error", "#ef4444"),
+    accent: getVar("--dwc-accent", "#3b82f6"),
+    bg: getVar("--dwc-bg", "#0b0f14"),
+    panelBg: getVar("--dwc-panel-bg", "#0f172a"),
+    text: getVar("--dwc-text", "#e5e7eb"),
+    muted: getVar("--dwc-muted", "#94a3b8"),
+    bubbleVisitor: getVar("--dwc-bubble-visitor", "#1f2937"),
+    bubbleAgent: getVar("--dwc-bubble-agent", "#111827"),
+    error: getVar("--dwc-error", "#ef4444"),
   };
 
   // --- state ---
-  var STORAGE_KEY = "arpchat.sessionUuid";
+  var STORAGE_KEY = "dwc.sessionUuid";
   var sessionUuid = null;
   try {
     sessionUuid = localStorage.getItem(STORAGE_KEY) || null;
   } catch (e) {}
-  var VISITOR_KEY = "arpchat.visitorId";
+  var VISITOR_KEY = "dwc.visitorId";
   var visitorId = null;
   try {
     visitorId = localStorage.getItem(VISITOR_KEY) || null;
@@ -141,17 +141,17 @@
   var connected = false;
 
   // --- UI ---
-  var bubble = el("button", "arpchat-bubble");
+  var bubble = el("button", "dwc-bubble");
   bubble.type = "button";
   bubble.innerHTML =
     '<span style="display:inline-block;width:10px;height:10px;border-radius:999px;background:#22c55e;margin-right:8px;vertical-align:middle"></span><span>' +
     label +
     "</span>";
 
-  var panel = el("div", "arpchat-panel");
-  var header = el("div", "arpchat-header");
-  var title = el("div", "arpchat-title");
-  var titleLogo = el("img", "arpchat-logo");
+  var panel = el("div", "dwc-panel");
+  var header = el("div", "dwc-header");
+  var title = el("div", "dwc-title");
+  var titleLogo = el("img", "dwc-logo");
   titleLogo.alt = "";
   if (logoUrl) {
     titleLogo.src = logoUrl;
@@ -159,33 +159,33 @@
   } else {
     titleLogo.style.display = "none";
   }
-  var titleText = el("span", "arpchat-titletext");
+  var titleText = el("span", "dwc-titletext");
   titleText.textContent = label;
   title.appendChild(titleLogo);
   title.appendChild(titleText);
-  var closeBtn = el("button", "arpchat-close");
+  var closeBtn = el("button", "dwc-close");
   closeBtn.type = "button";
   closeBtn.textContent = "×";
   header.appendChild(title);
   header.appendChild(closeBtn);
 
-  var status = el("div", "arpchat-status");
+  var status = el("div", "dwc-status");
   status.textContent = "Connecting…";
 
-  var messages = el("div", "arpchat-messages");
+  var messages = el("div", "dwc-messages");
 
-  var form = el("div", "arpchat-form");
-  var emojiToggle = el("button", "arpchat-emoji-toggle");
+  var form = el("div", "dwc-form");
+  var emojiToggle = el("button", "dwc-emoji-toggle");
   emojiToggle.type = "button";
   emojiToggle.textContent = "😊";
-  var emojiPanel = el("div", "arpchat-emoji-panel");
-  var input = el("input", "arpchat-input");
+  var emojiPanel = el("div", "dwc-emoji-panel");
+  var input = el("input", "dwc-input");
   input.type = "text";
   input.placeholder = "Type a message…";
-  var sendBtn = el("button", "arpchat-send");
+  var sendBtn = el("button", "dwc-send");
   sendBtn.type = "button";
   sendBtn.textContent = "Send";
-  var endBtn = el("button", "arpchat-end");
+  var endBtn = el("button", "dwc-end");
   endBtn.type = "button";
   endBtn.textContent = "End";
   form.appendChild(emojiToggle);
@@ -208,69 +208,69 @@
   style.type = "text/css";
   var dockSide = dockRight ? "right:16px;" : "left:16px;";
   style.textContent =
-    ".arpchat-bubble,.arpchat-panel,.arpchat-panel *{box-sizing:border-box}" +
-    ".arpchat-bubble{position:fixed !important;bottom:16px;" +
+    ".dwc-bubble,.dwc-panel,.dwc-panel *{box-sizing:border-box}" +
+    ".dwc-bubble{position:fixed !important;bottom:16px;" +
     dockSide +
     "z-index:2147483000;border:0;border-radius:999px;padding:10px 14px;font:600 14px/1.2 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;color:" +
     colors.text +
     ";background:" +
     colors.panelBg +
     ";box-shadow:0 10px 24px rgba(0,0,0,.35);cursor:pointer;width:auto !important;max-width:calc(100vw - 32px)}" +
-    ".arpchat-panel{position:fixed !important;bottom:72px;" +
+    ".dwc-panel{position:fixed !important;bottom:72px;" +
     dockSide +
     "width:320px !important;max-width:calc(100vw - 32px) !important;height:480px !important;max-height:calc(100vh - 96px) !important;z-index:2147483001;border-radius:16px;overflow:hidden;display:none;box-shadow:0 20px 50px rgba(0,0,0,.45);background:" +
     colors.bg +
     ";color:" +
     colors.text +
     ";font:14px/1.35 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}" +
-    ".arpchat-header{position:relative !important;display:flex;align-items:center !important;justify-content:flex-start;padding:12px 12px;background:" +
+    ".dwc-header{position:relative !important;display:flex;align-items:center !important;justify-content:flex-start;padding:12px 12px;background:" +
     colors.panelBg +
     ";border-bottom:1px solid rgba(255,255,255,.08);gap:10px}" +
-    ".arpchat-title{display:flex;align-items:center;gap:8px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1 1 auto;min-width:0;padding-right:28px}" +
-    ".arpchat-titletext{white-space:nowrap !important;overflow:hidden;text-overflow:ellipsis;display:block}" +
-    ".arpchat-logo{width:20px;height:20px;border-radius:4px;display:inline-block}" +
-    ".arpchat-close{position:absolute !important;top:6px;right:8px;left:auto;margin:0;margin-left:auto;padding:0;border:0;background:transparent;color:" +
+    ".dwc-title{display:flex;align-items:center;gap:8px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1 1 auto;min-width:0;padding-right:28px}" +
+    ".dwc-titletext{white-space:nowrap !important;overflow:hidden;text-overflow:ellipsis;display:block}" +
+    ".dwc-logo{width:20px;height:20px;border-radius:4px;display:inline-block}" +
+    ".dwc-close{position:absolute !important;top:6px;right:8px;left:auto;margin:0;margin-left:auto;padding:0;border:0;background:transparent;color:" +
     colors.muted +
     ";font-size:22px;line-height:1;cursor:pointer;min-width:0;min-height:0;width:24px;height:24px;display:inline-flex;align-items:center;justify-content:center}" +
-    ".arpchat-status{padding:8px 12px;font-size:12px;color:" +
+    ".dwc-status{padding:8px 12px;font-size:12px;color:" +
     colors.muted +
     ";border-bottom:1px solid rgba(255,255,255,.06)}" +
-    ".arpchat-messages{height:calc(100% - 44px - 34px - 56px);overflow:auto;padding:10px 12px;box-sizing:border-box}" +
-    ".arpchat-row{display:flex;margin:8px 0}" +
-    ".arpchat-row.visitor{justify-content:flex-end}" +
-    ".arpchat-bubblemsg{max-width:78%;padding:10px 10px;border-radius:12px;white-space:pre-wrap;word-wrap:break-word}" +
-    ".arpchat-row.visitor .arpchat-bubblemsg{background:" +
+    ".dwc-messages{height:calc(100% - 44px - 34px - 56px);overflow:auto;padding:10px 12px;box-sizing:border-box}" +
+    ".dwc-row{display:flex;margin:8px 0}" +
+    ".dwc-row.visitor{justify-content:flex-end}" +
+    ".dwc-bubblemsg{max-width:78%;padding:10px 10px;border-radius:12px;white-space:pre-wrap;word-wrap:break-word}" +
+    ".dwc-row.visitor .dwc-bubblemsg{background:" +
     colors.bubbleVisitor +
     "}" +
-    ".arpchat-row.agent .arpchat-bubblemsg{background:" +
+    ".dwc-row.agent .dwc-bubblemsg{background:" +
     colors.bubbleAgent +
     "}" +
-    ".arpchat-row.system .arpchat-bubblemsg{background:rgba(255,255,255,.06);color:" +
+    ".dwc-row.system .dwc-bubblemsg{background:rgba(255,255,255,.06);color:" +
     colors.muted +
     "}" +
-    ".arpchat-form{position:relative;display:flex;gap:8px;padding:10px 12px;background:" +
+    ".dwc-form{position:relative;display:flex;gap:8px;padding:10px 12px;background:" +
     colors.panelBg +
     ";border-top:1px solid rgba(255,255,255,.08);box-sizing:border-box;align-items:center;flex-wrap:nowrap}" +
-    ".arpchat-form > *{flex:0 0 auto !important}" +
-    ".arpchat-form button{position:static !important;float:none !important;margin:0 !important;width:auto !important;display:inline-flex !important;align-items:center;justify-content:center}" +
-    ".arpchat-emoji-toggle{border:1px solid rgba(255,255,255,.12);background:transparent;color:" +
+    ".dwc-form > *{flex:0 0 auto !important}" +
+    ".dwc-form button{position:static !important;float:none !important;margin:0 !important;width:auto !important;display:inline-flex !important;align-items:center;justify-content:center}" +
+    ".dwc-emoji-toggle{border:1px solid rgba(255,255,255,.12);background:transparent;color:" +
     colors.text +
     ";border-radius:8px;padding:6px 8px;cursor:pointer;font-size:14px;line-height:1;display:inline-flex;align-items:center;justify-content:center}" +
-    ".arpchat-emoji-panel{position:fixed;bottom:56px;left:12px;right:12px;display:none;grid-template-columns:repeat(10,1fr);gap:6px;padding:8px;border-radius:10px;background:rgba(15,23,42,.98);border:1px solid rgba(255,255,255,.12);max-height:220px;overflow:auto;z-index:2147483002;pointer-events:auto;box-shadow:0 12px 30px rgba(0,0,0,.35)}" +
-    ".arpchat-emoji-panel *{pointer-events:auto !important}" +
-    ".arpchat-emoji-panel button{border:1px solid rgba(255,255,255,.08);background:transparent;color:" +
+    ".dwc-emoji-panel{position:fixed;bottom:56px;left:12px;right:12px;display:none;grid-template-columns:repeat(10,1fr);gap:6px;padding:8px;border-radius:10px;background:rgba(15,23,42,.98);border:1px solid rgba(255,255,255,.12);max-height:220px;overflow:auto;z-index:2147483002;pointer-events:auto;box-shadow:0 12px 30px rgba(0,0,0,.35)}" +
+    ".dwc-emoji-panel *{pointer-events:auto !important}" +
+    ".dwc-emoji-panel button{border:1px solid rgba(255,255,255,.08);background:transparent;color:" +
     colors.text +
     ";border-radius:8px;padding:6px 0;cursor:pointer;font-size:16px;line-height:1}" +
-    ".arpchat-input{flex:1 1 auto !important;width:auto !important;min-width:0 !important;max-width:100%;display:block !important;visibility:visible !important;opacity:1 !important;padding:10px 10px;border-radius:10px;border:1px solid rgba(255,255,255,.10);background:rgba(0,0,0,.15);color:" +
+    ".dwc-input{flex:1 1 auto !important;width:auto !important;min-width:0 !important;max-width:100%;display:block !important;visibility:visible !important;opacity:1 !important;padding:10px 10px;border-radius:10px;border:1px solid rgba(255,255,255,.10);background:rgba(0,0,0,.15);color:" +
     colors.text +
     ";outline:none;box-sizing:border-box;font-size:14px;line-height:1.4}" +
-    ".arpchat-send{flex:0 0 auto !important;width:auto !important;max-width:90px !important;min-width:0 !important;padding:8px 10px;border-radius:10px;border:1px solid rgba(255,255,255,.14);background:transparent;color:" +
+    ".dwc-send{flex:0 0 auto !important;width:auto !important;max-width:90px !important;min-width:0 !important;padding:8px 10px;border-radius:10px;border:1px solid rgba(255,255,255,.14);background:transparent;color:" +
     colors.text +
     ";cursor:pointer;align-self:auto;font-size:13px;line-height:1.1;white-space:nowrap;display:inline-flex;align-items:center;justify-content:center}" +
-    ".arpchat-end{flex:0 0 auto !important;width:auto !important;max-width:90px !important;min-width:0 !important;padding:8px 10px;border-radius:10px;border:1px solid rgba(255,255,255,.14);background:transparent;color:" +
+    ".dwc-end{flex:0 0 auto !important;width:auto !important;max-width:90px !important;min-width:0 !important;padding:8px 10px;border-radius:10px;border:1px solid rgba(255,255,255,.14);background:transparent;color:" +
     colors.text +
     ";cursor:pointer;align-self:auto;font-size:13px;line-height:1.1;white-space:nowrap;opacity:.85;display:inline-flex;align-items:center;justify-content:center}" +
-    ".arpchat-send:hover{border-color:" +
+    ".dwc-send:hover{border-color:" +
     colors.accent +
     ";color:" +
     colors.accent +
@@ -295,7 +295,7 @@
   function saveHistory(sessionId, kind, text) {
     if (!sessionId) return;
     try {
-      var key = "arpchat_history_" + sessionId;
+      var key = "dwc_history_" + sessionId;
       var raw = localStorage.getItem(key);
       var arr = raw ? JSON.parse(raw) : [];
       if (!Array.isArray(arr)) arr = [];
@@ -308,7 +308,7 @@
   function loadHistory(sessionId) {
     if (!sessionId) return [];
     try {
-      var key = "arpchat_history_" + sessionId;
+      var key = "dwc_history_" + sessionId;
       var raw = localStorage.getItem(key);
       var arr = raw ? JSON.parse(raw) : [];
       return Array.isArray(arr) ? arr : [];
@@ -324,8 +324,8 @@
     if (!items.length) return;
     for (var i = 0; i < items.length; i += 1) {
       var it = items[i];
-      var row = el("div", "arpchat-row " + it.kind);
-      var b = el("div", "arpchat-bubblemsg");
+      var row = el("div", "dwc-row " + it.kind);
+      var b = el("div", "dwc-bubblemsg");
       b.innerHTML = renderMessage(it.text);
       row.appendChild(b);
       messages.appendChild(row);
@@ -336,8 +336,8 @@
   }
 
   function addMsg(kind, text) {
-    var row = el("div", "arpchat-row " + kind);
-    var b = el("div", "arpchat-bubblemsg");
+    var row = el("div", "dwc-row " + kind);
+    var b = el("div", "dwc-bubblemsg");
     b.innerHTML = renderMessage(text);
     row.appendChild(b);
     messages.appendChild(row);
@@ -532,7 +532,7 @@
           localStorage.removeItem(STORAGE_KEY);
         } catch (e) {}
         try {
-          localStorage.removeItem("arpchat_history_" + sessionUuid);
+          localStorage.removeItem("dwc_history_" + sessionUuid);
         } catch (e) {}
         sessionUuid = null;
         messages.innerHTML = "";
