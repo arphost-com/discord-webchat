@@ -4,3 +4,4 @@ data/
 scripts/embed-tests/
 .local/
 node_modules/
+CLAUDE.md
