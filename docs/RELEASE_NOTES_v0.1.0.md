@@ -11,5 +11,5 @@ Highlights:
 - Session tracking + GeoIP map
 
 Notes:
-- No WHMCS addon included.
-- No AI chat or indexing.
+- AI chat features available via OpenAI integration.
+- WordPress plugin included for easy integration.

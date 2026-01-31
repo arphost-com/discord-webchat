@@ -119,12 +119,37 @@ Copy `wordpress-plugin/discord-webchat/` into `wp-content/plugins/` and activate
 
 ## API Endpoints
 
-_(Coming soon)_
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/healthz` | GET | Health check |
+| `/widget.js` | GET | Embeddable chat widget |
+| `/api/session/start-guest` | POST | Create guest session |
+| `/api/session/start-client` | POST | Create authenticated session |
+| `/api/session/resume` | POST | Resume existing session |
+| `/api/track/page` | POST | Track page views |
+| `/api/admin/sessions` | GET | List sessions (admin) |
+| `/api/admin/session/:uuid` | GET | Session details (admin) |
+| `/ws` | WebSocket | Real-time messaging |
+
+See [docs/DEVELOPERS.md](docs/DEVELOPERS.md) for full API documentation.
 
 ## Development
 
-_(Coming soon)_
+### Running Tests
+
+```bash
+# End-to-end tests
+./scripts/e2e-test.sh http://localhost:3000 YOUR_ADMIN_KEY
+
+# Smoke tests
+./scripts/smoke-test.sh
+```
+
+### Documentation
+
+- [Developer Guide](docs/DEVELOPERS.md) - Architecture, API, and plugin development
+- [Setup Guide](docs/SETUP.md) - Detailed installation instructions
 
 ## License
 
-GPL-3.0. See `LICENSE`.
+MIT License. See `LICENSE`.
