@@ -85,7 +85,7 @@ services:
       TICKET_CONTACT_PROMPT_ONCE: ${TICKET_CONTACT_PROMPT_ONCE:-false}
 
     ports:
-      - "3000:3000"
+      - "${PORT:-3000}:3000"
     networks: [webchat_bridge]
 
 networks:
