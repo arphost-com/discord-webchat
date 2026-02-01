@@ -1,4 +1,5 @@
-# Discord WebChat
+# Discord WebChat by 
+https://arphost.com
 
 Discord Webchat allows you to embed livechat in your website and use discord thread as your client.
 
