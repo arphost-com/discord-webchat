@@ -1,5 +1,9 @@
 # Discord WebChat by 
 https://arphost.com
+<img width="317" height="516" alt="Screenshot 2026-02-01 at 6 47 53 AM" src="https://github.com/user-attachments/assets/d5463755-d1bd-4d0d-827d-4cef4b7c8cd8" />
+<img width="1075" height="889" alt="Screenshot 2026-02-01 at 6 47 09 AM" src="https://github.com/user-attachments/assets/a54ab9e4-04fc-40b8-b1c7-89eedb923b04" />
+<img width="999" height="1127" alt="Screenshot 2026-02-01 at 6 48 31 AM" src="https://github.com/user-attachments/assets/5159137a-5e59-4f80-b11a-bc4cf5f6503f" />
+<img width="1297" height="773" alt="Screenshot 2026-02-01 at 6 50 30 AM" src="https://github.com/user-attachments/assets/4f1e4f51-10b8-4b70-b6ce-d6d42c04792d" />
 
 Discord Webchat allows you to embed livechat in your website and use discord thread as your client.
 
